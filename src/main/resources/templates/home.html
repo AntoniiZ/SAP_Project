@@ -5,9 +5,20 @@
     <title>Homepage</title>
 </head>
 <body>
-<h1 th:inline="text" th:text="${username}">You are not logged in!</h1>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Sign Out"/>
-</form>
+<p th:if="${param.emailSent}">Success! Please confirm your email to finish registration!</p>
+<p th:if="${tokenErr}" th:text="${tokenErr}"></p>
+<p th:if="${activation}">You have activated your account!<a href="/home">Home</a></p>
+
+<span th:if="${not activation}">
+    <h1 th:inline="text" th:if="${not isAuthenticated}">
+        You are not logged in!
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    </h1>
+    <h1 th:inline="text" th:if="${isAuthenticated}" th:text="${username}"></h1>
+    <form th:if="${isAuthenticated}" th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</span>
 </body>
 </html>

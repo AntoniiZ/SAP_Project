@@ -1,11 +1,7 @@
 package com.company.SAP_Project.repositories.tables;
 
 import org.hibernate.annotations.Table;
-import org.hibernate.annotations.Type;
-import org.springframework.context.annotation.Primary;
-
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 
 @Entity
 @Table(appliesTo = "user")

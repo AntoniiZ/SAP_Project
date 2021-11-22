@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,13 +20,15 @@ public class AuthService implements AuthenticationProvider {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
         UsernamePasswordAuthenticationToken token = null;
         String username = (String) authentication.getPrincipal();
         String password = authentication.getCredentials().toString();
-        //System.out.println(username +'-' + password);
 
         if(authenticateUser(username, password))
         {
@@ -44,9 +47,9 @@ public class AuthService implements AuthenticationProvider {
     {
         User user = repository.findByUsername(username);
 
-        if(user == null) return false;
+        if(user == null || !user.isActive()) return false;
 
-        return user.getPassword().equals(password);
+        return passwordEncoder.matches(password, user.getPassword());
     }
 
     public static String getAuthUsername()
@@ -60,5 +63,10 @@ public class AuthService implements AuthenticationProvider {
             username = principal.toString();
         }
         return username;
+    }
+
+    public static boolean isAuthenticated()
+    {
+        return !getAuthUsername().equals("anonymousUser");
     }
 }

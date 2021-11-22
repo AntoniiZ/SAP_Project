@@ -2,23 +2,15 @@ package com.company.SAP_Project.services;
 
 import com.company.SAP_Project.models.UserModel;
 import com.company.SAP_Project.repositories.UserRepository;
+import com.company.SAP_Project.repositories.VerificationTokenRepository;
 import com.company.SAP_Project.repositories.tables.User;
+import com.company.SAP_Project.repositories.tables.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 @Service
@@ -27,6 +19,12 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -48,11 +46,18 @@ public class MyUserDetailsService implements UserDetailsService {
 
         User user = new User();
         user.setUsername(userModel.getUsername());
-        user.setPassword(userModel.getPassword());
+        user.setPassword(passwordEncoder.encode(userModel.getPassword()));
         user.setEmail(userModel.getEmail());
+        user.setActive(false);
         user.setRoles("USER");
 
         return userRepository.save(user);
+    }
+
+    public void activate(User user)
+    {
+        user.setActive(true);
+        userRepository.save(user);
     }
 
     public boolean emailExists(String email) {
@@ -63,4 +68,14 @@ public class MyUserDetailsService implements UserDetailsService {
         return userRepository.findByUsername(username) != null;
     }
 
+    public User getUserByToken(String verificationToken) {
+        return tokenRepository.findByToken(verificationToken).getUser();
+    }
+
+    public VerificationToken getVerificationToken(String verificationToken) {
+        return tokenRepository.findByToken(verificationToken);
+    }
+    public void createVerificationToken(User user, String token) {
+        tokenRepository.save(new VerificationToken(user, token));
+    }
 }

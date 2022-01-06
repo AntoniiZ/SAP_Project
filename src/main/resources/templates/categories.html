@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+    <head th:include="header">
+        <title>Categories</title>
+    </head>
+    <body>
+        <div th:include="navBar"></div>
+        <div th:include="messages"></div>
+        <div th:each="formError: ${formErrors}">
+            <div class="d-flex flex-row justify-content-center">
+                <div class="tableVertSpace col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10
+                    form-group alert alert-danger text-center" role="alert">
+                    <p th:text="${formError}"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container tableVertSpace" th:if="${isAdmin}">
+            <div class="d-flex flex-row justify-content-center">
+                <h1 class="display-6">Add or update category to table</h1>
+            </div>
+            <form th:action="@{/categories}" method="post">
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                            <input name="name" class="form-control"
+                                   placeholder="category name" type="text" th:value="${name}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                            <input name="description" class="form-control"
+                                      placeholder="category description" th:value="${description}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group text-center">
+                        <button type="submit" class="btn btn-lg btn-success">Save category to table</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tableVertSpace d-flex flex-row justify-content-center">
+        <div class="table-responsive-sm text-center  col-xxl-6 col-xl-7 col-lg-8 col-md-9 col-sm-10 col-11">
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name of category</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Time of creation</th>
+                        <th scope="col" th:if="${isAdmin}">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="category, categoryStat : ${categories}">
+                        <th scope="row" th:text="${categoryStat.index + 1}"></th>
+                        <td th:text="${category.getName()}"></td>
+                        <td th:text="${category.getDescription()}"></td>
+                        <td th:text="${category.getDateOfCreation().toString()}"></td>
+
+                        <form th:if="${isAdmin}"
+                              th:action="@{/categories/?deleteName=} + ${category.getName()}" method="post">
+                            <td><button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </button></td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        </div>
+
+    </body>
+</html>

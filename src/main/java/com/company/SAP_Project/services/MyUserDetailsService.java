@@ -1,10 +1,10 @@
 package com.company.SAP_Project.services;
 
-import com.company.SAP_Project.models.UserModel;
+import com.company.SAP_Project.dtoObjects.UserDto;
 import com.company.SAP_Project.repositories.UserRepository;
 import com.company.SAP_Project.repositories.VerificationTokenRepository;
-import com.company.SAP_Project.repositories.tables.User;
-import com.company.SAP_Project.repositories.tables.VerificationToken;
+import com.company.SAP_Project.models.User;
+import com.company.SAP_Project.models.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Transactional
@@ -33,31 +36,65 @@ public class MyUserDetailsService implements UserDetailsService {
         return new MyUserDetails(user);
     }
 
-    public User registerNewUserAccount(UserModel userModel) throws UserServiceException {
+    public User getUserByUsername(String username)  {
+        return userRepository.findByUsername(username);
+    }
 
-        if (emailExists(userModel.getEmail()))
+    public List<User> getUsers() {
+        List<User> users = userRepository.getUsers();
+        if(users == null) users = new ArrayList<>();
+        return users;
+    }
+    public User registerNewUserAccount(UserDto userDto) throws CustomServiceException {
+
+        if (emailExists(userDto.getEmail()))
         {
-            throw new UserServiceException("The email is already registered - " + userModel.getEmail());
+            throw new CustomServiceException(
+                    String.format("The email %s is already registered", userDto.getEmail())
+            );
         }
-        if (usernameExists(userModel.getUsername()))
+        if (usernameExists(userDto.getUsername()))
         {
-            throw new UserServiceException("The username is already registered - " + userModel.getUsername());
+            throw new CustomServiceException(
+                    String.format("The username %s is already registered", userDto.getUsername())
+            );
         }
 
         User user = new User();
-        user.setUsername(userModel.getUsername());
-        user.setPassword(passwordEncoder.encode(userModel.getPassword()));
-        user.setEmail(userModel.getEmail());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setEmail(userDto.getEmail());
         user.setActive(false);
         user.setRoles("USER");
+
 
         return userRepository.save(user);
     }
 
-    public void activate(User user)
+    public void activate(User user, Long tokenId)
     {
         user.setActive(true);
+        tokenRepository.deleteById(tokenId);
         userRepository.save(user);
+    }
+
+    public void addAdmin(String username)
+    {
+
+        if(!usernameExists(username))
+        {
+            return;
+        }
+        userRepository.setUserRole(username, "ADMIN");
+    }
+
+    public void removeAdmin(String username)
+    {
+        if(!usernameExists(username))
+        {
+            return;
+        }
+        userRepository.setUserRole(username, "USER");
     }
 
     public boolean emailExists(String email) {
@@ -66,10 +103,6 @@ public class MyUserDetailsService implements UserDetailsService {
 
     public boolean usernameExists(String username) {
         return userRepository.findByUsername(username) != null;
-    }
-
-    public User getUserByToken(String verificationToken) {
-        return tokenRepository.findByToken(verificationToken).getUser();
     }
 
     public VerificationToken getVerificationToken(String verificationToken) {

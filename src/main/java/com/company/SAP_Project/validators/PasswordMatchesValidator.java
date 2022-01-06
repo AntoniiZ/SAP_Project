@@ -1,7 +1,7 @@
 package com.company.SAP_Project.validators;
 
 import com.company.SAP_Project.annotations.PasswordMatches;
-import com.company.SAP_Project.models.UserModel;
+import com.company.SAP_Project.dtoObjects.UserDto;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -13,7 +13,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
     }
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context){
-        UserModel user = (UserModel) obj;
+        UserDto user = (UserDto) obj;
         return user.getPassword().equals(user.getMatchingPassword());
     }
 }

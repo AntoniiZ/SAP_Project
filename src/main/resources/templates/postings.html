@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+    <head th:include="header">
+        <title>Postings</title>
+    </head>
+    <body>
+        <div th:include="navBar"></div>
+        <div th:include="messages"></div>
+
+        <div th:each="formError: ${formErrors}">
+            <div class="d-flex flex-row justify-content-center">
+                <div class="tableVertSpace col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10
+                    form-group alert alert-danger text-center" role="alert">
+                    <p th:text="${formError}"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container tableVertSpace" th:if="${isAuthenticated}">
+            <span th:if="${isUpdating}">
+                <div class="d-flex flex-row justify-content-center">
+                    <h1 class="display-6">Update a posting</h1>
+                </div>
+            </span>
+            <span th:if="${!isUpdating}">
+                <div class="d-flex flex-row justify-content-center">
+                    <h1 class="display-6">Submit a posting</h1>
+                </div>
+            </span>
+
+            <form th:action="@{/postings}" method="post">
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                            <input name="title" class="form-control"
+                                   placeholder="posting title" type="text" th:value="${title}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                            <input name="description" class="form-control"
+                                   placeholder="posting description" th:value="${description}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                        <select id="categoryName" name="categoryName" class="form-select input-group input-group-lg">
+                            <option hidden selected disabled>Select wanted category</option>
+                            <span th:each="category : ${categories}">
+                                <option th:value="${category.getName()}" th:text="${category.getName()}"></option>
+                            </span>
+                        </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group text-center">
+
+                        <span th:if="${!isUpdating}">
+                            <button type="submit" class="btn btn-lg btn-success">Submit your posting</button>
+                        </span>
+                        <span th:if="${isUpdating}">
+                            <input type="hidden" name="updateId" th:value="${updatingId}">
+                            <button type="submit" class="btn btn-lg btn-success">Update your posting</button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tableVertSpace d-flex flex-row justify-content-center">
+            <div class="table-responsive-sm text-center col-xxl-6 col-xl-7 col-lg-8 col-md-9 col-sm-10 col-11">
+                <table class="table table-hover table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Date of creation</th>
+                        <th scope="col">Owner</th>
+                        <th th:if="${isAuthenticated}" scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="posting, postingStat : ${postings}">
+                        <th scope="row" th:text="${postingStat.index + 1}"></th>
+                        <td th:text="${posting.getTitle()}"></td>
+                        <td th:text="${posting.getCategory().getName()}"></td>
+                        <td th:text="${posting.getDescription()}"></td>
+                        <td th:text="${posting.getDateOfCreation()}"></td>
+                        <td th:text="${posting.getUser().getUsername()}"></td>
+                        <td th:if="${isAuthenticated}" class = "btn-group">
+                        <form th:if="${posting.getUser().getUsername() == username &&
+                            posting.getActive()}" th:action="@{/postings?deactivateId=} + ${posting.getId()}"
+                            method = "post">
+
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-caret-down"></i>
+                            </button>
+                        </form>
+                        <span th:if="${!isUpdating}">
+                            <span th:if="${posting.getUser().getUsername() == username &&
+                            posting.getActive()}">
+                                <a th:href="@{/postings?updateId=} + ${posting.getId()}"
+                                   class="btn btn-warning btn-link">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </span>
+                        </span>
+                        <span th:if="${isUpdating}">
+                            <span th:if="${posting.getUser().getUsername() == username &&
+                            posting.getActive()}">
+                                <span th:if="${posting.getId() == updatingId}">
+                                    <a th:href="@{/postings}" class="btn btn-info btn-link">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </span>
+                            </span>
+                        </span>
+                        <form th:if="${!favorites.findFavoriteByUsernameAndPostingId(username, posting.getId())}"
+                              th:action="@{/postings?favId=} + ${posting.getId()}" method="post">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-hand-thumbs-up"></i>
+                            </button>
+                        </form>
+                        <form th:if="${favorites.findFavoriteByUsernameAndPostingId(username, posting.getId())}"
+                              th:action="@{/postings?delFavId=} + ${posting.getId()}" method="post">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-hand-thumbs-down"></i>
+                            </button>
+                        </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

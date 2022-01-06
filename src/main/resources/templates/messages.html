@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+    </head>
+    <body>
+        <div th:fragment="messages">
+        <span th:if="${serverSuccess != null}">
+            <div class="alert alert-success" role="alert">
+                <p th:text="${serverSuccess}"></p>
+            </div>
+        </span>
+        <span th:if="${serverSuccess == null && serverInfo != null}">
+            <div class="alert alert-info" role="alert">
+                <p th:text="${serverInfo}"></p>
+            </div>
+        </span>
+        <span th:if="${serverError != null}">
+            <div class="alert alert-danger" role="alert">
+                <p th:text="${serverError}"></p>
+            </div>
+        </span>
+        </div>
+    </body>
+</html>

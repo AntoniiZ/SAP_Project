@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 
 public @interface PasswordMatches {
-    String message() default "Both entered passwords must match!";
+    String message() default "Your both entered passwords must match!";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

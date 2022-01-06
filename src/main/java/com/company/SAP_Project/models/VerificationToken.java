@@ -1,4 +1,4 @@
-package com.company.SAP_Project.repositories.tables;
+package com.company.SAP_Project.models;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -13,12 +13,14 @@ public class VerificationToken {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
     private String token;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
+    @Column(nullable = false)
     private Date expiryDate;
 
     private Date calculateExpiryDate(int expiryTimeInMinutes) {

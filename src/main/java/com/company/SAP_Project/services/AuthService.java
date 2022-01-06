@@ -1,18 +1,21 @@
 package com.company.SAP_Project.services;
 
 import com.company.SAP_Project.repositories.UserRepository;
-import com.company.SAP_Project.repositories.tables.User;
+import com.company.SAP_Project.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Service
 public class AuthService implements AuthenticationProvider {
@@ -52,21 +55,42 @@ public class AuthService implements AuthenticationProvider {
         return passwordEncoder.matches(password, user.getPassword());
     }
 
-    public static String getAuthUsername()
+    public String getAuthUsername()
     {
-        String username;
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String authUsername = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
-        } else {
-            username = principal.toString();
+        if (!(authentication instanceof AnonymousAuthenticationToken))
+        {
+            authUsername = authentication.getName();
         }
-        return username;
+        return authUsername;
     }
 
-    public static boolean isAuthenticated()
+    public boolean isAdmin()
     {
-        return !getAuthUsername().equals("anonymousUser");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication instanceof AnonymousAuthenticationToken))
+        {
+            return false;
+        }
+
+        User user = repository.findByUsername(authentication.getName());
+        return user.isAdmin() || user.isOwner();
+    }
+    public boolean isOwner()
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if ((authentication instanceof AnonymousAuthenticationToken))
+        {
+            return false;
+        }
+
+        User user = repository.findByUsername(authentication.getName());
+        return user.isOwner();
+    }
+    public boolean isAuthenticated()
+    {
+        return getAuthUsername() != null;
     }
 }

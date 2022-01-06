@@ -1,7 +1,7 @@
 
 package com.company.SAP_Project.repositories;
 
-import com.company.SAP_Project.repositories.tables.VerificationToken;
+import com.company.SAP_Project.models.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

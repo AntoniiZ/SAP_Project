@@ -1,18 +1,60 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
-    <title>Spring Security Example </title>
-</head>
-<body>
-<div th:if="${param.error}">
-    Invalid username and password.
-</div>
-<form th:action="@{/login}" method="post">
-    <div><label> Username: <input type="text" name="username" required/> </label></div>
-    <div><label> Password: <input type="password" name="password" required/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-    <a href="/register">Register</a>
-</form>
-</body>
+    <head th:include="header">
+        <title>Login form</title>
+    </head>
+    <body>
+        <div th:include="navBar"></div>
+        <div th:include="messages"></div>
+        <div class="container">
+            <div class="d-flex flex-row justify-content-center">
+                <h1 class="display-4">Please sign in</h1>
+            </div>
+            <div class="d-flex flex-row justify-content-center">
+                <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10" th:if="${param.error}">
+                    <div class="alert alert-danger" role="alert">
+                        <p class="text-center">Invalid username and password</p>
+                    </div>
+                </div>
+            </div>
+            <form th:action="@{/login}" method="post">
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                            <div class="input-group-prepend input-group-lg ">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                            </div>
+                            <input name="username" class="form-control" placeholder="username" type="username">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-6 col-sm-9 col-10 form-group">
+                        <div class="input-group input-group-lg">
+                            <div class="input-group-prepend input-group-lg">
+                                <span class="input-group-text">
+                                    <i class="bi bi-key"></i>
+                                </span>
+                            </div>
+                            <input name="password" class="form-control" placeholder="******" type="password">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Login</button>
+                        <a href="/register" class="btn btn-primary">Don't have an account?</a>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="form-group">
+                        <a href="#" class="btn-link">Forgot username or password?</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
 </html>

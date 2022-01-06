@@ -1,6 +1,6 @@
 package com.company.SAP_Project.events;
 
-import com.company.SAP_Project.repositories.tables.User;
+import com.company.SAP_Project.models.User;
 import com.company.SAP_Project.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -28,13 +28,13 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         this.confirmRegistration(event);
     }
 
-    private void confirmRegistration(OnRegistrationCompleteEvent event) {
+    private void confirmRegistration(OnRegistrationCompleteEvent event)
+    {
         User user = event.getUser();
         String token = UUID.randomUUID().toString();
         userService.createVerificationToken(user, token);
 
         SimpleMailMessage email = new SimpleMailMessage();
-
         email.setTo(user.getEmail());
         email.setSubject("SAP_Project account confirmation");
         email.setText(String.format(

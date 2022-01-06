@@ -1,6 +1,6 @@
 package com.company.SAP_Project.services;
 
-import com.company.SAP_Project.repositories.tables.User;
+import com.company.SAP_Project.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

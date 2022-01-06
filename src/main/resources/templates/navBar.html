@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <body>
+        <div th:fragment="navBar">
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" th:href = "@{/home}">Home</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <span th:if="${isAuthenticated == null || !isAuthenticated}">
+                                <li class="nav-item">
+                                    <a class="nav-link" th:href = "@{/login}">Login</a>
+                                </li>
+                            </span>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href = "@{/users}">Users</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Postings</a>
+
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" th:href = "@{/postings}">
+                                            All active postings
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           th:href = "@{/postings?postingFilter=new}">
+                                            New active postings
+                                        </a>
+                                    </li>
+                                    <span th:if="${isAuthenticated}">
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               th:href = "@{/postings?postingFilter=own}">
+                                                All of your postings
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               th:href = "@{/postings?postingFilter=favorited}">
+                                                All favourited postings
+                                            </a>
+                                        </li>
+                                    </span>
+
+                                    <span th:if="${isAdmin}">
+                                        <a class="dropdown-item"
+                                           th:href = "@{/postings?postingFilter=inactive}">
+                                            Recent inactive postings
+                                        </a>
+                                    </span>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href = "@{/categories}">Categories</a>
+                            </li>
+                        </ul>
+                        <div class="d-flex">
+                            <input id="searchInput" class="form-control me-2" type="search"
+                                   placeholder="Search for applications" aria-label="Search">
+                            <button id="searchSubmit" class="btn btn-outline-success" type="submit">Search</button>
+                        </div>
+                        <span th:if="${isAuthenticated}">
+                            <li class="navbar-nav nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false" th:text="${username}"></a>
+
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <form th:action="@{/logout}" method="post">
+                                            <button type="submit" class="btn-link dropdown-item">Sign out</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        </span>
+
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </body>
+</html>

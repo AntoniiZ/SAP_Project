@@ -1,6 +1,6 @@
 package com.company.SAP_Project.events;
 
-import com.company.SAP_Project.repositories.tables.User;
+import com.company.SAP_Project.models.User;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.Locale;
